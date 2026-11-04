@@ -9,8 +9,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body>
+    // Browser extensions often add attributes to <html>/<body> before React loads; ignore those mismatches.
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
