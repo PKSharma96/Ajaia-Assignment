@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+body {
+  @apply bg-slate-100 text-slate-900 antialiased;
+}
+
+/* Document content styles. Tiptap renders the editable area with the `tiptap` class. */
+.tiptap {
+  @apply min-h-[60vh] text-[15px] leading-7 outline-none;
+}
+.tiptap > * + * {
+  @apply mt-3;
+}
+.tiptap h1 {
+  @apply text-3xl font-bold leading-tight;
+}
+.tiptap h2 {
+  @apply text-2xl font-semibold leading-snug;
+}
+.tiptap h3 {
+  @apply text-xl font-semibold;
+}
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+  @apply text-lg font-semibold;
+}
+.tiptap ul {
+  @apply list-disc pl-6;
+}
+.tiptap ol {
+  @apply list-decimal pl-6;
+}
+.tiptap li > p {
+  @apply my-0;
+}
+.tiptap blockquote {
+  @apply border-l-4 border-slate-300 pl-4 text-slate-600;
+}
+.tiptap code {
+  @apply rounded bg-slate-100 px-1 font-mono text-sm;
+}
+.tiptap pre {
+  @apply overflow-x-auto rounded bg-slate-900 p-3 font-mono text-sm text-slate-100;
+}
+.tiptap a {
+  @apply text-blue-600 underline;
+}
+.tiptap hr {
+  @apply my-6 border-slate-200;
+}
