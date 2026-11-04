@@ -30,8 +30,8 @@
 
 - **Automated:**
   - 95 backend tests (unit, plus API tests against a real Postgres)
-  - 40 frontend tests
-  - 10 Playwright end-to-end tests in real Chrome
+  - 50 frontend tests
+  - 11 Playwright end-to-end tests in real Chrome
   - type checking, ESLint and Prettier on both repos
 - **Mutation checks:** I broke key rules on purpose (editor allowed to share, version check removed) and confirmed the right tests failed.
 - **Production simulation:** I installed the API without dev dependencies (like Render does), started it with `NODE_ENV=production`, and checked the health endpoint and that the cookie was `Secure; HttpOnly; SameSite=Lax`.

@@ -2,17 +2,14 @@
 
 import { type ChangeEvent, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import { ApiError, api } from "@/lib/api";
 import type { DocumentDetail } from "@/lib/types";
 import { SUPPORTED_EXTENSIONS, validateUploadFile } from "@/lib/upload";
 
-interface Props {
-  onImported: (doc: DocumentDetail) => void;
-  onError: (message: string) => void;
-}
-
-/** Uploads a .txt, .md or .docx file and turns it into a new document. */
-export function ImportButton({ onImported, onError }: Props) {
+/** Uploads a .txt, .md or .docx file, turns it into a new document and reports the result as a toast. */
+export function ImportButton({ onImported }: { onImported: (doc: DocumentDetail) => void }) {
+  const toast = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -23,15 +20,17 @@ export function ImportButton({ onImported, onError }: Props) {
 
     const problem = validateUploadFile(file);
     if (problem) {
-      onError(problem);
+      toast.error(problem);
       return;
     }
 
     setUploading(true);
     try {
-      onImported(await api.importDocument(file));
+      const doc = await api.importDocument(file);
+      toast.success(`Imported “${doc.title}”`);
+      onImported(doc);
     } catch (err) {
-      onError(err instanceof ApiError ? err.message : "Upload failed. Please try again.");
+      toast.error(err instanceof ApiError ? err.message : "Upload failed. Please try again.");
     } finally {
       setUploading(false);
     }

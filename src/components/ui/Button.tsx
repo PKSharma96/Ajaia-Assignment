@@ -4,7 +4,8 @@ const VARIANTS = {
   primary: "bg-blue-600 text-white shadow-sm hover:bg-blue-700",
   secondary: "border border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50",
   ghost: "text-slate-600 hover:bg-slate-100",
-  danger: "text-slate-500 hover:bg-red-50 hover:text-red-600",
+  danger: "bg-red-600 text-white shadow-sm hover:bg-red-700",
+  dangerText: "text-slate-500 hover:bg-red-50 hover:text-red-600",
 };
 
 const SIZES = {

@@ -7,7 +7,9 @@ import { DocumentList } from "@/components/DocumentList";
 import { ImportButton } from "@/components/ImportButton";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Spinner } from "@/components/ui/Spinner";
+import { useToast } from "@/components/ui/Toast";
 import { ApiError, api } from "@/lib/api";
 import type { DocumentSummary } from "@/lib/types";
 import { useCurrentUser } from "@/lib/useCurrentUser";
@@ -17,40 +19,48 @@ interface DocumentLists {
   shared: DocumentSummary[];
 }
 
+const errorText = (err: unknown, fallback: string) => (err instanceof ApiError ? err.message : fallback);
+
 export default function DashboardPage() {
   const router = useRouter();
+  const toast = useToast();
   const user = useCurrentUser();
   const [lists, setLists] = useState<DocumentLists | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [docToDelete, setDocToDelete] = useState<DocumentSummary | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     api
       .listDocuments()
       .then(setLists)
-      .catch((err) => setError(err instanceof ApiError ? err.message : "Could not load your documents."));
+      .catch((err) => setLoadError(errorText(err, "Could not load your documents.")));
   }, []);
 
   async function createDocument() {
-    setError(null);
     setCreating(true);
     try {
       const doc = await api.createDocument();
       router.push(`/documents/${doc.id}`);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not create a document.");
+      toast.error(errorText(err, "Could not create a document."));
       setCreating(false);
     }
   }
 
-  async function deleteDocument(doc: DocumentSummary) {
-    if (!window.confirm(`Delete "${doc.title}"? This cannot be undone.`)) return;
-    setError(null);
+  async function confirmDelete() {
+    if (!docToDelete) return;
+    setDeleting(true);
     try {
-      await api.deleteDocument(doc.id);
+      await api.deleteDocument(docToDelete.id);
+      toast.success(`Deleted “${docToDelete.title}”`);
       setLists(await api.listDocuments());
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not delete the document.");
+      toast.error(errorText(err, "Could not delete the document."));
+    } finally {
+      setDeleting(false);
+      setDocToDelete(null);
     }
   }
 
@@ -64,30 +74,27 @@ export default function DashboardPage() {
             <p className="mt-1 text-sm text-slate-500">Import supports .txt, .md and .docx files up to 2 MB.</p>
           </div>
           <div className="flex gap-2">
-            <ImportButton
-              onImported={(doc) => router.push(`/documents/${doc.id}`)}
-              onError={(message) => setError(message)}
-            />
+            <ImportButton onImported={(doc) => router.push(`/documents/${doc.id}`)} />
             <Button onClick={createDocument} disabled={creating}>
               {creating ? "Creating…" : "+ New document"}
             </Button>
           </div>
         </div>
 
-        {error && (
+        {loadError && (
           <Alert
             className="mt-6"
             action={
-              <Button variant="ghost" size="sm" onClick={() => setError(null)} aria-label="Dismiss">
-                ✕
+              <Button variant="secondary" size="sm" onClick={() => window.location.reload()}>
+                Try again
               </Button>
             }
           >
-            {error}
+            {loadError}
           </Alert>
         )}
 
-        {!lists && !error && <Spinner label="Loading documents…" className="mt-12" />}
+        {!lists && !loadError && <Spinner label="Loading documents…" className="mt-12" />}
 
         {lists && (
           <>
@@ -95,7 +102,7 @@ export default function DashboardPage() {
               heading="My documents"
               documents={lists.owned}
               emptyText="You have no documents yet. Create one or import a file to get started."
-              onDelete={deleteDocument}
+              onDelete={setDocToDelete}
             />
             <DocumentList
               heading="Shared with me"
@@ -106,6 +113,19 @@ export default function DashboardPage() {
           </>
         )}
       </main>
+
+      {docToDelete && (
+        <ConfirmDialog
+          title="Delete document?"
+          message={
+            <>“{docToDelete.title}” will be deleted for you and everyone it is shared with. This cannot be undone.</>
+          }
+          confirmLabel="Delete"
+          busy={deleting}
+          onConfirm={confirmDelete}
+          onCancel={() => setDocToDelete(null)}
+        />
+      )}
     </>
   );
 }

@@ -51,7 +51,7 @@ export function DocumentList({ heading, documents, emptyText, showOwner = false,
               </Link>
               <RoleBadge role={doc.role} />
               {onDelete && (
-                <Button variant="danger" size="sm" onClick={() => onDelete(doc)} aria-label={`Delete ${doc.title}`}>
+                <Button variant="dangerText" size="sm" onClick={() => onDelete(doc)} aria-label={`Delete ${doc.title}`}>
                   Delete
                 </Button>
               )}

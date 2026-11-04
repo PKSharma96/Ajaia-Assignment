@@ -72,6 +72,12 @@ Users without access get **404, not 403**, so they can't discover that a private
 
 - **Server:** zod schemas validate every request body. A central error handler turns every error into `{ error }` with the right status code: 400, 401, 403, 404, 409 or 413, or 500 with a generic message. Environment variables are validated at startup.
 - **Client:** one API wrapper turns failures into readable messages, including when the network is down or a proxy returns an HTML error page. It also sends expired sessions back to the login page.
+- **Feedback in the UI:**
+  - The results of actions appear as toasts (`useToast`): success and failure for sharing, removing access, importing, deleting and copying links.
+  - Errors in a form stay next to that form.
+  - Problems that persist, such as a save conflict or view-only access, stay as banners until resolved.
+  - Destructive actions use an in-app `ConfirmDialog`, never the browser's `confirm()`.
+  - The only browser-native prompt left is the "leave page with unsaved changes?" warning, because browsers do not allow pages to replace it.
 
 ## Testing strategy
 
@@ -79,8 +85,8 @@ Users without access get **404, not 403**, so they can't discover that a private
 | --------------------------- | --------------------------------- | ----- | ---------------------------------------------------------------------------- |
 | Backend unit                | Vitest                            | 44    | Access matrix, validation edge cases, importer (real .docx, unsafe Markdown) |
 | Backend API                 | Vitest + supertest, real Postgres | 51    | Every endpoint, permissions, conflicts, upload limits                        |
-| Frontend unit and component | Vitest + Testing Library          | 40    | API client, autosave queue, toolbar with a real editor, share dialog, UI kit |
-| End-to-end                  | Playwright (Chrome)               | 10    | The full user journeys with two users at once                                |
+| Frontend unit and component | Vitest + Testing Library          | 50    | API client, autosave queue, toolbar with a real editor, share dialog, UI kit |
+| End-to-end                  | Playwright (Chrome)               | 11    | The full user journeys with two users at once                                |
 
 I also checked that the tests can fail. I deliberately broke the access rules and the version check, and confirmed that the right tests went red.
 

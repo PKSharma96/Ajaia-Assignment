@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ShareDialog } from "@/components/ShareDialog";
+import { ToastProvider } from "@/components/ui/Toast";
 import { ApiError, api } from "@/lib/api";
 import type { Share } from "@/lib/types";
 
@@ -12,14 +13,16 @@ function renderDialog(shares: Share[] = []) {
   const onSharesChange = vi.fn();
   const onClose = vi.fn();
   render(
-    <ShareDialog
-      documentId="doc1"
-      documentTitle="Plan"
-      owner={owner}
-      shares={shares}
-      onSharesChange={onSharesChange}
-      onClose={onClose}
-    />,
+    <ToastProvider>
+      <ShareDialog
+        documentId="doc1"
+        documentTitle="Plan"
+        owner={owner}
+        shares={shares}
+        onSharesChange={onSharesChange}
+        onClose={onClose}
+      />
+    </ToastProvider>,
   );
   return { onSharesChange, onClose, user: userEvent.setup() };
 }
@@ -41,6 +44,7 @@ describe("ShareDialog", () => {
     expect(addShare).toHaveBeenCalledWith("doc1", "bob@ajaia.dev", "VIEWER");
     expect(onSharesChange).toHaveBeenCalledWith([bobShare]);
     expect(screen.getByLabelText("Email to share with")).toHaveValue("");
+    expect(screen.getByText("Shared with bob@ajaia.dev (can view)")).toBeInTheDocument();
   });
 
   it("shows the server's error message, e.g. for an unknown email", async () => {
@@ -75,9 +79,30 @@ describe("ShareDialog", () => {
 
     await user.selectOptions(screen.getByLabelText("Access level for Bob"), "VIEWER");
     expect(updateShare).toHaveBeenCalledWith("doc1", "u2", "VIEWER");
+    expect(screen.getByText("Bob can now only view")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Remove Bob" }));
     expect(removeShare).toHaveBeenCalledWith("doc1", "u2");
+    expect(screen.getByText("Removed access for Bob")).toBeInTheDocument();
+  });
+
+  it("copies the link and confirms with a toast", async () => {
+    const { user } = renderDialog();
+    const writeText = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue();
+
+    await user.click(screen.getByRole("button", { name: "Copy link" }));
+
+    expect(writeText).toHaveBeenCalledWith(window.location.href);
+    expect(screen.getByText(/Link copied/)).toBeInTheDocument();
+  });
+
+  it("shows an error toast when the clipboard is not available", async () => {
+    const { user } = renderDialog();
+    vi.spyOn(navigator.clipboard, "writeText").mockRejectedValue(new Error("denied"));
+
+    await user.click(screen.getByRole("button", { name: "Copy link" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Could not copy the link");
   });
 
   it("closes with the Escape key", async () => {

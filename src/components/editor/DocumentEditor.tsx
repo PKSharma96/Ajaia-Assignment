@@ -7,12 +7,14 @@ import { RoleBadge } from "@/components/RoleBadge";
 import { ShareDialog } from "@/components/ShareDialog";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import { editorExtensions } from "@/lib/editor";
 import type { DocumentDetail, Share } from "@/lib/types";
 import { Toolbar } from "./Toolbar";
 import { type SaveStatus, useDocumentSaver } from "./useDocumentSaver";
 
 const AUTOSAVE_DELAY_MS = 800;
+const NEW_DOCUMENT_TITLE = "Untitled document"; // default title set by the API
 
 const STATUS: Record<SaveStatus, { text: string; dot: string }> = {
   saved: { text: "All changes saved", dot: "bg-green-500" },
@@ -26,6 +28,7 @@ export function DocumentEditor({ doc }: { doc: DocumentDetail }) {
   const canEdit = doc.role !== "viewer";
   const isOwner = doc.role === "owner";
 
+  const toast = useToast();
   const { status, errorMessage, save, markUnsaved } = useDocumentSaver(doc.id, doc.version);
   const [title, setTitle] = useState(doc.title);
   const savedTitle = useRef(doc.title);
@@ -74,10 +77,17 @@ export function DocumentEditor({ doc }: { doc: DocumentDetail }) {
     document.title = `${title || "Untitled"} - Ajaia Docs`;
   }, [title]);
 
+  // A brand-new document opens with its title selected, so the user can type a name right away.
+  const titleInput = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (canEdit && doc.version === 1 && doc.title === NEW_DOCUMENT_TITLE) titleInput.current?.select();
+  }, [canEdit, doc.version, doc.title]);
+
   async function commitTitle() {
     const trimmed = title.trim();
     if (!trimmed) {
-      setTitle(savedTitle.current); // an empty title is not allowed, so restore the last one
+      setTitle(savedTitle.current);
+      toast.error("A document needs a title, so the previous title was kept.");
       return;
     }
     setTitle(trimmed);
@@ -103,6 +113,7 @@ export function DocumentEditor({ doc }: { doc: DocumentDetail }) {
             ← Documents
           </Link>
           <input
+            ref={titleInput}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onBlur={commitTitle}

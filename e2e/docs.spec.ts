@@ -98,6 +98,28 @@ test("create, rename, format, autosave and reopen a document", async ({ page, co
   await deleteDocument(context, id);
 });
 
+test("deleting asks for confirmation in the app, and Cancel keeps the document", async ({ page }) => {
+  await login(page, ALICE);
+  const title = `E2E delete ${unique()}`;
+  await createDocument(page, title);
+  await page.getByRole("link", { name: "← Documents" }).click();
+
+  const row = page.getByRole("listitem").filter({ hasText: title });
+  const confirm = page.getByRole("dialog", { name: "Delete document?" });
+
+  await row.getByRole("button", { name: `Delete ${title}` }).click();
+  await expect(confirm).toContainText(title);
+  await screenshot(page, "08-delete-confirm");
+  await confirm.getByRole("button", { name: "Cancel" }).click();
+  await expect(confirm).toBeHidden();
+  await expect(row).toBeVisible();
+
+  await row.getByRole("button", { name: `Delete ${title}` }).click();
+  await confirm.getByRole("button", { name: "Delete" }).click();
+  await expect(page.getByText(`Deleted “${title}”`)).toBeVisible();
+  await expect(row).toHaveCount(0);
+});
+
 test("an empty title is not saved and the previous title comes back", async ({ page, context }) => {
   await login(page, ALICE);
   const title = `E2E title ${unique()}`;
@@ -107,6 +129,7 @@ test("an empty title is not saved and the previous title comes back", async ({ p
   await titleInput.fill("   ");
   await titleInput.press("Enter");
   await expect(titleInput).toHaveValue(title);
+  await expect(alertMessage(page)).toContainText("A document needs a title");
 
   await page.reload();
   await expect(titleInput).toHaveValue(title);
@@ -131,6 +154,7 @@ test("sharing: viewer is read-only, upgrading to editor allows editing, revoking
   await dialog.getByLabel("Access level", { exact: true }).selectOption("VIEWER");
   await dialog.getByRole("button", { name: "Share" }).click();
   await expect(dialog.getByText("bob@ajaia.dev")).toBeVisible();
+  await expect(alice.page.getByText("Shared with bob@ajaia.dev (can view)")).toBeVisible();
 
   // Sharing with an unknown user shows a clear error.
   await dialog.getByLabel("Email to share with").fill("ghost@ajaia.dev");
@@ -164,6 +188,7 @@ test("sharing: viewer is read-only, upgrading to editor allows editing, revoking
   // Alice revokes access; Bob can no longer open the document.
   await dialog.getByRole("button", { name: "Remove Bob Smith" }).click();
   await expect(dialog.getByText("Only you can open this document.")).toBeVisible();
+  await expect(alice.page.getByText("Removed access for Bob Smith")).toBeVisible();
   await bob.page.reload();
   await expect(bob.page.getByText("Cannot open document")).toBeVisible();
 
@@ -223,6 +248,7 @@ test("import a Markdown file as a new document, and reject unsupported files", a
   });
 
   await expect(page).toHaveURL(/\/documents\/[^/]+$/);
+  await expect(page.getByText("Imported “Imported notes”")).toBeVisible();
   await expect(page.getByLabel("Document title")).toHaveValue("Imported notes");
   await expect(editor(page).locator("h1")).toHaveText("From a file");
   await expect(editor(page).locator("strong")).toHaveText("bold");

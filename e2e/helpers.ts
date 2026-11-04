@@ -27,7 +27,9 @@ export async function createDocument(page: Page, title: string) {
   await page.getByRole("button", { name: "+ New document" }).click();
   await expect(page).toHaveURL(/\/documents\/[^/]+$/);
 
+  // New documents open with the title selected, ready to be renamed.
   const titleInput = page.getByLabel("Document title");
+  await expect(titleInput).toBeFocused();
   await titleInput.fill(title);
   await titleInput.press("Enter");
   await expectSaved(page);
