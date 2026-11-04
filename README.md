@@ -2,7 +2,8 @@
 
 A lightweight collaborative document editor, inspired by Google Docs and built for the Ajaia AI-Native Full Stack Developer assignment.
 
-- **Live app:** _LIVE_URL_ (see [Demo accounts](#demo-accounts))
+- **Live app:** https://ajaia-green.vercel.app (see [Demo accounts](#demo-accounts))
+- **Live API health check:** https://ajaia-assignment-backend-o0mu.onrender.com/api/health
 - **Frontend (this repo):** Next.js + Tiptap, deployed on Vercel
 - **Backend:** [Ajaia-assignment-backend](https://github.com/PKSharma96/Ajaia-assignment-backend), Express + Prisma + Postgres, deployed on Render + Neon
 - **More docs:** [ARCHITECTURE.md](ARCHITECTURE.md) · [AI_WORKFLOW.md](AI_WORKFLOW.md) · [SUBMISSION.md](SUBMISSION.md)

@@ -2,13 +2,13 @@
 
 ## Links
 
-| What                       | Where                                                  |
-| -------------------------- | ------------------------------------------------------ |
-| Live app                   | _LIVE_URL_                                             |
-| Backend API (health check) | _API_URL_/api/health                                   |
-| Frontend source            | https://github.com/PKSharma96/Ajaia-Assignment         |
-| Backend source             | https://github.com/PKSharma96/Ajaia-assignment-backend |
-| Walkthrough video          | See `VIDEO_URL.txt`                                    |
+| What                       | Where                                                         |
+| -------------------------- | ------------------------------------------------------------- |
+| Live app                   | https://ajaia-green.vercel.app                                |
+| Backend API (health check) | https://ajaia-assignment-backend-o0mu.onrender.com/api/health |
+| Frontend source            | https://github.com/PKSharma96/Ajaia-Assignment                |
+| Backend source             | https://github.com/PKSharma96/Ajaia-assignment-backend        |
+| Walkthrough video          | See `VIDEO_URL.txt`                                           |
 
 ## Test accounts
 
@@ -22,19 +22,22 @@ Use two browsers (or a private window) to be signed in as two users at once. The
 
 ## What is included
 
-| Item                                         | File / location                                                     |
-| -------------------------------------------- | ------------------------------------------------------------------- |
-| Frontend source code                         | this repo: `src/`, `tests/`, `e2e/`                                 |
-| Backend source code                          | backend repo: `src/`, `prisma/`, `tests/`                           |
-| README with local setup and run instructions | `README.md` (both repos)                                            |
-| Architecture note                            | `ARCHITECTURE.md`                                                   |
-| AI workflow note                             | `AI_WORKFLOW.md`                                                    |
-| This file                                    | `SUBMISSION.md`                                                     |
-| Walkthrough video URL                        | `VIDEO_URL.txt`                                                     |
-| Screenshots                                  | `docs/screenshots/`                                                 |
-| Sample import files (.txt, .md, .docx)       | `samples/`                                                          |
-| Automated tests                              | 95 backend tests, 50 frontend tests, 11 Playwright end-to-end tests |
-| Deployment config                            | `next.config.mjs` (API proxy), backend `render.yaml`                |
+| Item                                              | Google Drive folder                | GitHub                                   |
+| ------------------------------------------------- | ---------------------------------- | ---------------------------------------- |
+| Frontend source code (Next.js)                    | `source/ajaia-docs-frontend.zip`   | Ajaia-Assignment                         |
+| Backend source code (Express + Prisma)            | `source/ajaia-docs-backend.zip`    | Ajaia-assignment-backend                 |
+| README with local setup and run instructions      | `README.md`                        | `README.md` in both repos                |
+| Architecture note                                 | `ARCHITECTURE.md`                  | frontend repo                            |
+| AI workflow note                                  | `AI_WORKFLOW.md`                   | frontend repo                            |
+| This file                                         | `SUBMISSION.md`                    | frontend repo                            |
+| Live product URL                                  | `LIVE_URL.txt` and the table above | README                                   |
+| Walkthrough video URL                             | `VIDEO_URL.txt`                    | frontend repo                            |
+| Screenshots                                       | `screenshots/`                     | frontend repo, `docs/screenshots/`       |
+| Sample files to test import (.txt, .md, .docx)    | `samples/`                         | frontend repo, `samples/`                |
+| Automated tests (95 backend, 50 frontend, 11 E2E) | inside the source zips             | `tests/` and `e2e/`                      |
+| Deployment config                                 | inside the source zips             | `next.config.mjs`, backend `render.yaml` |
+
+**Deployment:** the frontend runs on Vercel, the API on Render (free tier, Singapore), and the database on Neon Postgres (Singapore). All 11 Playwright end-to-end tests pass against the live URL (`E2E_BASE_URL=https://ajaia-green.vercel.app npm run test:e2e`).
 
 ## Status
 

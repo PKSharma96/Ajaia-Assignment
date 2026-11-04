@@ -1,0 +1,5 @@
+Live app: https://ajaia-green.vercel.app
+API health check: https://ajaia-assignment-backend-o0mu.onrender.com/api/health
+
+Demo accounts (no password): alice@ajaia.dev, bob@ajaia.dev, carol@ajaia.dev
+The free backend may take up to a minute to wake up on the first visit.
