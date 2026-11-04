@@ -22,18 +22,19 @@ Use two browsers (or a private window) to be signed in as two users at once. The
 
 ## What is included
 
-| Item                                         | File / location                                                    |
-| -------------------------------------------- | ------------------------------------------------------------------ |
-| Frontend source code                         | this repo: `src/`, `tests/`, `e2e/`                                |
-| Backend source code                          | backend repo: `src/`, `prisma/`, `tests/`                          |
-| README with local setup and run instructions | `README.md` (both repos)                                           |
-| Architecture note                            | `ARCHITECTURE.md`                                                  |
-| AI workflow note                             | `AI_WORKFLOW.md`                                                   |
-| This file                                    | `SUBMISSION.md`                                                    |
-| Walkthrough video URL                        | `VIDEO_URL.txt`                                                    |
-| Screenshots                                  | `docs/screenshots/`                                                |
-| Automated tests                              | 95 backend tests, 40 frontend tests, 9 Playwright end-to-end tests |
-| Deployment config                            | `next.config.mjs` (API proxy), backend `render.yaml`               |
+| Item                                         | File / location                                                     |
+| -------------------------------------------- | ------------------------------------------------------------------- |
+| Frontend source code                         | this repo: `src/`, `tests/`, `e2e/`                                 |
+| Backend source code                          | backend repo: `src/`, `prisma/`, `tests/`                           |
+| README with local setup and run instructions | `README.md` (both repos)                                            |
+| Architecture note                            | `ARCHITECTURE.md`                                                   |
+| AI workflow note                             | `AI_WORKFLOW.md`                                                    |
+| This file                                    | `SUBMISSION.md`                                                     |
+| Walkthrough video URL                        | `VIDEO_URL.txt`                                                     |
+| Screenshots                                  | `docs/screenshots/`                                                 |
+| Sample import files (.txt, .md, .docx)       | `samples/`                                                          |
+| Automated tests                              | 95 backend tests, 40 frontend tests, 10 Playwright end-to-end tests |
+| Deployment config                            | `next.config.mjs` (API proxy), backend `render.yaml`                |
 
 ## Status
 

@@ -1,0 +1,15 @@
+Team Meeting Notes
+
+Date: Monday, 10:00 AM
+Attendees: Alice, Bob, Carol
+
+Agenda
+1. Review last week's progress
+2. Plan the next release
+3. Open questions
+
+Decisions
+- Ship the document editor to the internal beta group
+- Collect feedback for one week before the next iteration
+
+Plain text files keep every line as its own paragraph. There is no formatting in a .txt file, so use the toolbar after importing to add headings, bold text or lists.

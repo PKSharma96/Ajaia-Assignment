@@ -23,6 +23,7 @@
 - **Fixed tests that passed for the wrong reason or failed for the wrong reason:**
   - The first toolbar test selected _all_ content, which also selected an empty trailing paragraph, so "is this a heading?" was correctly false. I changed the test to select the words, like a real user does.
   - E2E selectors matched Next.js's hidden route-announcer element as an "alert". I added a helper that ignores empty alerts.
+- **Found a real import bug with sample files.** The generated unit test for .docx only checked headings and bold. When I imported a realistic sample Word file through the app, underline was missing, because `mammoth` drops underline unless it is mapped explicitly. I fixed the mapping and extended the test to check underline.
 - **Caught a misleading verification run.** To check the tests can fail, I broke the access rules on purpose. The first run "passed" because the break and the revert had been issued in parallel, so the code was already restored when the tests ran. I re-ran the check step by step. Three tests then failed as expected, and breaking the version check made the conflict test fail.
 
 ## How I verified correctness, UX and reliability
@@ -30,7 +31,7 @@
 - **Automated:**
   - 95 backend tests (unit, plus API tests against a real Postgres)
   - 40 frontend tests
-  - 9 Playwright end-to-end tests in real Chrome
+  - 10 Playwright end-to-end tests in real Chrome
   - type checking, ESLint and Prettier on both repos
 - **Mutation checks:** I broke key rules on purpose (editor allowed to share, version check removed) and confirmed the right tests failed.
 - **Production simulation:** I installed the API without dev dependencies (like Render does), started it with `NODE_ENV=production`, and checked the health endpoint and that the cookie was `Secure; HttpOnly; SameSite=Lax`.

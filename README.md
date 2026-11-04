@@ -29,11 +29,23 @@ To test sharing, use **two browsers** (or one normal window and one private wind
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Documents             | Create, rename (click the title), edit, delete (owner only), and reopen. Changes **autosave** about 1 second after you stop typing, and a status shows Saving… / All changes saved.                                                                                                                                 |
 | Rich text             | Bold, italic, underline, Heading 1–3 / normal text, bulleted and numbered lists, undo/redo. Keyboard shortcuts work too (Ctrl/Cmd+B, I, U).                                                                                                                                                                         |
-| File import           | **.txt, .md, .docx up to 2 MB** become a new editable document. Headings, lists, bold, italic and underline are kept. Images, tables and colours are dropped (their text is kept). Other file types get a clear error.                                                                                              |
+| File import           | **.txt, .md, .docx up to 2 MB** become a new editable document. Headings, lists, bold, italic and underline are kept. Images, tables and colours are dropped (their text is kept). Other file types get a clear error. Ready-made test files are in [`samples/`](samples).                                          |
 | Sharing               | The owner shares by email as **Can edit** or **Can view**, can change the role later, or remove access. The dashboard separates **My documents** from **Shared with me** and shows the owner and your role. Viewers get a read-only editor. Users without access get "not found", so private documents stay hidden. |
 | Persistence           | PostgreSQL. Content is stored as the editor's own JSON format, so formatting comes back exactly after a refresh.                                                                                                                                                                                                    |
 | Conflicts             | If two people edit the same document, the second save is rejected (it would otherwise silently overwrite) and the user is asked to reload.                                                                                                                                                                          |
 | Validation and errors | Every request is validated on the server. The UI shows the server's message (e.g. "No user found with email …"). Empty titles are refused, leaving the page warns about unsaved changes, and a sleeping server is retried automatically on login.                                                                   |
+
+## Sample files for import
+
+The [`samples/`](samples) folder has one file of each supported type. On the dashboard, click **Import file** and pick one.
+
+| File                             | What it shows after import                                             |
+| -------------------------------- | ---------------------------------------------------------------------- |
+| `Team meeting notes.txt`         | Plain text: each line becomes a paragraph (no formatting)              |
+| `Product launch plan.md`         | Headings (H1–H3), bold, italic, underline, bulleted and numbered lists |
+| `Quarterly business review.docx` | Word headings, bold, italic, underline, bulleted and numbered lists    |
+
+The document title comes from the file name, e.g. "Product launch plan".
 
 ## What is intentionally not included
 
@@ -72,11 +84,11 @@ The frontend forwards every `/api/*` request to `API_URL` (see `next.config.mjs`
 
 ## Tests
 
-| Command                        | What it covers                                                                                                                                                                                                                                                                                                                                  |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm test` (this repo)         | **40 tests**: the API client (error messages, 401 redirect, uploads), upload validation, the autosave queue and conflict handling, the toolbar against a real Tiptap editor, the share dialog, and the shared UI components.                                                                                                                    |
-| `npm run test:e2e` (this repo) | **9 Playwright tests** in real Chrome against the running app. They cover login, the dashboard split, create/format/autosave/reopen, empty-title handling, the viewer/editor/revoke sharing flow, privacy, conflict handling, and import. Requires both apps running with seeded data. Set `E2E_BASE_URL` to run them against the deployed app. |
-| `npm test` (backend repo)      | **95 tests**: unit tests for access rules, validation and the importer, plus API tests for every endpoint and its edge cases.                                                                                                                                                                                                                   |
+| Command                        | What it covers                                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm test` (this repo)         | **40 tests**: the API client (error messages, 401 redirect, uploads), upload validation, the autosave queue and conflict handling, the toolbar against a real Tiptap editor, the share dialog, and the shared UI components.                                                                                                                                                  |
+| `npm run test:e2e` (this repo) | **10 Playwright tests** in real Chrome against the running app. They cover login, the dashboard split, create/format/autosave/reopen, empty-title handling, the viewer/editor/revoke sharing flow, privacy, conflict handling, and import (including the sample .docx). Requires both apps running with seeded data. Set `E2E_BASE_URL` to run them against the deployed app. |
+| `npm test` (backend repo)      | **95 tests**: unit tests for access rules, validation and the importer, plus API tests for every endpoint and its edge cases.                                                                                                                                                                                                                                                 |
 
 Other checks: `npm run lint`, `npm run typecheck`, `npm run format`.
 

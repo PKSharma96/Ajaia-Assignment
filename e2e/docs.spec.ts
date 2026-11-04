@@ -240,3 +240,17 @@ test("import a Markdown file as a new document, and reject unsupported files", a
 
   await deleteDocument(context, id);
 });
+
+test("import the sample Word file from the samples folder", async ({ page, context }) => {
+  await login(page, ALICE);
+
+  await page.getByTestId("import-input").setInputFiles("samples/Quarterly business review.docx");
+
+  await expect(page.getByLabel("Document title")).toHaveValue("Quarterly business review");
+  await expect(editor(page).locator("h1")).toHaveText("Quarterly Business Review");
+  await expect(editor(page).locator("u")).toHaveText("underline");
+  await expect(editor(page).locator("ul > li")).toHaveCount(3);
+  await expect(editor(page).locator("ol > li")).toHaveCount(3);
+
+  await deleteDocument(context, page.url().split("/").pop()!);
+});
