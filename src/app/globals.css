@@ -8,6 +8,10 @@ body {
 .tiptap {
   @apply min-h-[60vh] text-[15px] leading-7 outline-none;
 }
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply pointer-events-none float-left h-0 text-slate-400;
+}
 .tiptap > * + * {
   @apply mt-3;
 }

@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { DocumentList } from "@/components/DocumentList";
 import { ImportButton } from "@/components/ImportButton";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { ApiError, api } from "@/lib/api";
 import type { DocumentSummary } from "@/lib/types";
 import { useCurrentUser } from "@/lib/useCurrentUser";
@@ -65,23 +68,26 @@ export default function DashboardPage() {
               onImported={(doc) => router.push(`/documents/${doc.id}`)}
               onError={(message) => setError(message)}
             />
-            <button
-              onClick={createDocument}
-              disabled={creating}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-            >
+            <Button onClick={createDocument} disabled={creating}>
               {creating ? "Creating…" : "+ New document"}
-            </button>
+            </Button>
           </div>
         </div>
 
         {error && (
-          <p role="alert" className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700">
+          <Alert
+            className="mt-6"
+            action={
+              <Button variant="ghost" size="sm" onClick={() => setError(null)} aria-label="Dismiss">
+                ✕
+              </Button>
+            }
+          >
             {error}
-          </p>
+          </Alert>
         )}
 
-        {!lists && !error && <p className="mt-8 text-sm text-slate-500">Loading documents…</p>}
+        {!lists && !error && <Spinner label="Loading documents…" className="mt-12" />}
 
         {lists && (
           <>

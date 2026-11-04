@@ -29,7 +29,7 @@
 
 - **Automated:**
   - 95 backend tests (unit, plus API tests against a real Postgres)
-  - 32 frontend tests
+  - 40 frontend tests
   - 9 Playwright end-to-end tests in real Chrome
   - type checking, ESLint and Prettier on both repos
 - **Mutation checks:** I broke key rules on purpose (editor allowed to share, version check removed) and confirmed the right tests failed.

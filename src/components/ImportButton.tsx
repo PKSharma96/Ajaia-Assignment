@@ -1,6 +1,7 @@
 "use client";
 
 import { type ChangeEvent, useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
 import { ApiError, api } from "@/lib/api";
 import type { DocumentDetail } from "@/lib/types";
 import { SUPPORTED_EXTENSIONS, validateUploadFile } from "@/lib/upload";
@@ -46,13 +47,14 @@ export function ImportButton({ onImported, onError }: Props) {
         className="hidden"
         data-testid="import-input"
       />
-      <button
+      <Button
+        variant="secondary"
         onClick={() => inputRef.current?.click()}
         disabled={uploading}
-        className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+        title={`Supported: ${SUPPORTED_EXTENSIONS.join(", ")} (max 2 MB)`}
       >
         {uploading ? "Importing…" : "Import file"}
-      </button>
+      </Button>
     </>
   );
 }

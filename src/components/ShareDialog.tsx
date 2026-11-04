@@ -1,8 +1,49 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, type ReactNode, useEffect, useState } from "react";
+import { Alert } from "@/components/ui/Alert";
+import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 import { ApiError, api } from "@/lib/api";
 import type { Share, ShareRole, User } from "@/lib/types";
+
+function RoleSelect({
+  value,
+  onChange,
+  label,
+  disabled = false,
+}: {
+  value: ShareRole;
+  onChange: (role: ShareRole) => void;
+  label: string;
+  disabled?: boolean;
+}) {
+  return (
+    <select
+      value={value}
+      disabled={disabled}
+      onChange={(e) => onChange(e.target.value as ShareRole)}
+      aria-label={label}
+      className="rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+    >
+      <option value="EDITOR">Can edit</option>
+      <option value="VIEWER">Can view</option>
+    </select>
+  );
+}
+
+function PersonRow({ name, email, children }: { name: string; email: string; children: ReactNode }) {
+  return (
+    <li className="flex items-center gap-3 py-2 text-sm">
+      <Avatar name={name} size="sm" />
+      <span className="min-w-0 flex-1">
+        <span className="block truncate font-medium">{name}</span>
+        <span className="block truncate text-xs text-slate-500">{email}</span>
+      </span>
+      <span className="flex shrink-0 items-center gap-1">{children}</span>
+    </li>
+  );
+}
 
 interface Props {
   documentId: string;
@@ -20,6 +61,13 @@ export function ShareDialog({ documentId, documentTitle, owner, shares, onShares
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [demoUsers, setDemoUsers] = useState<User[]>([]);
+  const [copied, setCopied] = useState(false);
+
+  async function copyLink() {
+    await navigator.clipboard?.writeText(window.location.href).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   useEffect(() => {
     api
@@ -76,9 +124,9 @@ export function ShareDialog({ documentId, documentTitle, owner, shares, onShares
           <h2 id="share-title" className="text-lg font-semibold">
             Share “{documentTitle}”
           </h2>
-          <button onClick={onClose} aria-label="Close" className="rounded px-2 text-slate-500 hover:bg-slate-100">
+          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Close">
             ✕
-          </button>
+          </Button>
         </div>
 
         <form onSubmit={onSubmit} className="mt-4 flex flex-wrap gap-2">
@@ -89,6 +137,7 @@ export function ShareDialog({ documentId, documentTitle, owner, shares, onShares
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email, e.g. carol@ajaia.dev"
             aria-label="Email to share with"
+            autoFocus
             className="min-w-0 flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
           />
           <datalist id="share-suggestions">
@@ -98,67 +147,49 @@ export function ShareDialog({ documentId, documentTitle, owner, shares, onShares
               </option>
             ))}
           </datalist>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as ShareRole)}
-            aria-label="Access level"
-            className="rounded-md border border-slate-300 px-2 py-2 text-sm"
-          >
-            <option value="EDITOR">Can edit</option>
-            <option value="VIEWER">Can view</option>
-          </select>
-          <button
-            type="submit"
-            disabled={busy}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-          >
+          <RoleSelect value={role} onChange={setRole} label="Access level" />
+          <Button type="submit" disabled={busy}>
             Share
-          </button>
+          </Button>
         </form>
 
-        {error && (
-          <p role="alert" className="mt-3 rounded-md bg-red-50 p-2 text-sm text-red-700">
-            {error}
-          </p>
-        )}
+        {error && <Alert className="mt-3">{error}</Alert>}
 
         <h3 className="mt-6 text-sm font-medium text-slate-700">People with access</h3>
         <ul className="mt-2 divide-y divide-slate-100">
-          <li className="flex items-center justify-between py-2 text-sm">
-            <span>
-              <span className="font-medium">{owner.name}</span> <span className="text-slate-500">{owner.email}</span>
-            </span>
+          <PersonRow name={owner.name} email={owner.email}>
             <span className="text-slate-500">Owner</span>
-          </li>
+          </PersonRow>
           {shares.map((share) => (
-            <li key={share.userId} className="flex items-center justify-between gap-2 py-2 text-sm">
-              <span className="min-w-0 truncate">
-                <span className="font-medium">{share.name}</span> <span className="text-slate-500">{share.email}</span>
-              </span>
-              <span className="flex shrink-0 items-center gap-1">
-                <select
-                  value={share.role}
-                  disabled={busy}
-                  onChange={(e) => run(() => api.updateShare(documentId, share.userId, e.target.value as ShareRole))}
-                  aria-label={`Access level for ${share.name}`}
-                  className="rounded border border-slate-200 px-1 py-1 text-sm"
-                >
-                  <option value="EDITOR">Can edit</option>
-                  <option value="VIEWER">Can view</option>
-                </select>
-                <button
-                  disabled={busy}
-                  onClick={() => run(() => api.removeShare(documentId, share.userId))}
-                  aria-label={`Remove ${share.name}`}
-                  className="rounded px-2 py-1 text-slate-500 hover:bg-red-50 hover:text-red-600"
-                >
-                  Remove
-                </button>
-              </span>
-            </li>
+            <PersonRow key={share.userId} name={share.name} email={share.email}>
+              <RoleSelect
+                value={share.role}
+                disabled={busy}
+                onChange={(newRole) => run(() => api.updateShare(documentId, share.userId, newRole))}
+                label={`Access level for ${share.name}`}
+              />
+              <Button
+                variant="danger"
+                size="sm"
+                disabled={busy}
+                onClick={() => run(() => api.removeShare(documentId, share.userId))}
+                aria-label={`Remove ${share.name}`}
+              >
+                Remove
+              </Button>
+            </PersonRow>
           ))}
         </ul>
         {shares.length === 0 && <p className="mt-1 text-sm text-slate-500">Only you can open this document.</p>}
+
+        <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+          <Button variant="secondary" size="sm" onClick={copyLink}>
+            {copied ? "Link copied ✓" : "Copy link"}
+          </Button>
+          <Button size="sm" onClick={onClose}>
+            Done
+          </Button>
+        </div>
       </div>
     </div>
   );

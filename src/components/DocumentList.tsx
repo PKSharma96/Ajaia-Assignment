@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import { formatDate } from "@/lib/format";
 import type { DocumentSummary } from "@/lib/types";
 import { RoleBadge } from "./RoleBadge";
@@ -10,6 +11,18 @@ interface Props {
   showOwner?: boolean;
   onDelete?: (doc: DocumentSummary) => void;
 }
+
+const DocumentIcon = () => (
+  <span
+    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-blue-50 text-blue-600"
+    aria-hidden="true"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5M9 13h6M9 17h6" />
+    </svg>
+  </span>
+);
 
 export function DocumentList({ heading, documents, emptyText, showOwner = false, onDelete }: Props) {
   return (
@@ -23,25 +36,24 @@ export function DocumentList({ heading, documents, emptyText, showOwner = false,
           {emptyText}
         </p>
       ) : (
-        <ul className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200 bg-white">
+        <ul className="divide-y divide-slate-100 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
           {documents.map((doc) => (
-            <li key={doc.id} className="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">
-              <Link href={`/documents/${doc.id}`} className="min-w-0 flex-1">
-                <span className="block truncate font-medium text-slate-900">{doc.title}</span>
-                <span className="block text-xs text-slate-500">
-                  {showOwner && <>Owned by {doc.owner.name} · </>}
-                  Edited {formatDate(doc.updatedAt)}
+            <li key={doc.id} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50">
+              <Link href={`/documents/${doc.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+                <DocumentIcon />
+                <span className="min-w-0">
+                  <span className="block truncate font-medium text-slate-900">{doc.title}</span>
+                  <span className="block text-xs text-slate-500">
+                    {showOwner && <>Owned by {doc.owner.name} · </>}
+                    Edited {formatDate(doc.updatedAt)}
+                  </span>
                 </span>
               </Link>
               <RoleBadge role={doc.role} />
               {onDelete && (
-                <button
-                  onClick={() => onDelete(doc)}
-                  className="rounded px-2 py-1 text-xs text-slate-500 hover:bg-red-50 hover:text-red-600"
-                  aria-label={`Delete ${doc.title}`}
-                >
+                <Button variant="danger" size="sm" onClick={() => onDelete(doc)} aria-label={`Delete ${doc.title}`}>
                   Delete
-                </button>
+                </Button>
               )}
             </li>
           ))}

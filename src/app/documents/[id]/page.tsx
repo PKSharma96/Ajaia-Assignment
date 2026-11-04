@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DocumentEditor } from "@/components/editor/DocumentEditor";
+import { Spinner } from "@/components/ui/Spinner";
 import { ApiError, api } from "@/lib/api";
 import type { DocumentDetail } from "@/lib/types";
 
@@ -38,7 +39,7 @@ export default function DocumentPage() {
   }
 
   if (!doc) {
-    return <p className="p-8 text-center text-sm text-slate-500">Loading document…</p>;
+    return <Spinner label="Loading document…" className="py-24" />;
   }
 
   return <DocumentEditor doc={doc} />;

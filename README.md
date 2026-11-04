@@ -74,7 +74,7 @@ The frontend forwards every `/api/*` request to `API_URL` (see `next.config.mjs`
 
 | Command                        | What it covers                                                                                                                                                                                                                                                                                                                                  |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm test` (this repo)         | **32 tests**: the API client (error messages, 401 redirect, uploads), upload validation, the autosave queue and conflict handling, the toolbar against a real Tiptap editor, and the share dialog.                                                                                                                                              |
+| `npm test` (this repo)         | **40 tests**: the API client (error messages, 401 redirect, uploads), upload validation, the autosave queue and conflict handling, the toolbar against a real Tiptap editor, the share dialog, and the shared UI components.                                                                                                                    |
 | `npm run test:e2e` (this repo) | **9 Playwright tests** in real Chrome against the running app. They cover login, the dashboard split, create/format/autosave/reopen, empty-title handling, the viewer/editor/revoke sharing flow, privacy, conflict handling, and import. Requires both apps running with seeded data. Set `E2E_BASE_URL` to run them against the deployed app. |
 | `npm test` (backend repo)      | **95 tests**: unit tests for access rules, validation and the importer, plus API tests for every endpoint and its edge cases.                                                                                                                                                                                                                   |
 
@@ -103,7 +103,8 @@ src/
   app/documents/page.tsx       dashboard: My documents / Shared with me, new, import
   app/documents/[id]/page.tsx  loads a document, handles "not found"
   components/editor/           DocumentEditor (title, autosave, banners), Toolbar, useDocumentSaver
-  components/ShareDialog.tsx   share by email, change role, remove access
+  components/ShareDialog.tsx   share by email, change role, remove access, copy link
+  components/ui/               small reusable pieces: Button, Alert, Avatar, Spinner
   lib/api.ts                   typed API client with friendly error messages
   lib/upload.ts                client-side file checks (same limits as the server)
 tests/                         Vitest + Testing Library

@@ -2,6 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
+import { Alert } from "@/components/ui/Alert";
+import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
+import { Spinner } from "@/components/ui/Spinner";
 import { ApiError, api } from "@/lib/api";
 import type { User } from "@/lib/types";
 
@@ -84,16 +88,14 @@ export default function LoginPage() {
           private window) to try sharing between users.
         </p>
 
-        {serverState === "connecting" && <p className="mt-6 text-sm text-slate-500">Connecting to the server…</p>}
+        {serverState === "connecting" && <Spinner label="Connecting to the server…" className="mt-6" />}
         {serverState === "waking" && (
-          <p className="mt-6 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+          <Alert tone="warning" className="mt-6">
             The free server is waking up. This can take up to a minute, and the page will continue on its own.
-          </p>
+          </Alert>
         )}
         {serverState === "down" && (
-          <p className="mt-6 rounded-md bg-red-50 p-3 text-sm text-red-700">
-            Could not reach the server. Please refresh the page to try again.
-          </p>
+          <Alert className="mt-6">Could not reach the server. Please refresh the page to try again.</Alert>
         )}
 
         {users.length > 0 && (
@@ -103,9 +105,10 @@ export default function LoginPage() {
                 <button
                   onClick={() => login(user.email)}
                   disabled={busyEmail !== null}
-                  className="flex w-full items-center justify-between rounded-lg border border-slate-200 px-4 py-3 text-left hover:border-blue-400 hover:bg-blue-50 disabled:opacity-60"
+                  className="flex w-full items-center gap-3 rounded-lg border border-slate-200 px-4 py-3 text-left transition-colors hover:border-blue-400 hover:bg-blue-50 disabled:opacity-60"
                 >
-                  <span>
+                  <Avatar name={user.name} />
+                  <span className="flex-1">
                     <span className="block font-medium">{user.name}</span>
                     <span className="block text-sm text-slate-500">{user.email}</span>
                   </span>
@@ -131,21 +134,13 @@ export default function LoginPage() {
               placeholder="alice@ajaia.dev"
               className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
             />
-            <button
-              type="submit"
-              disabled={busyEmail !== null}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-            >
+            <Button type="submit" disabled={busyEmail !== null}>
               Sign in
-            </button>
+            </Button>
           </div>
         </form>
 
-        {error && (
-          <p role="alert" className="mt-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-            {error}
-          </p>
-        )}
+        {error && <Alert className="mt-4">{error}</Alert>}
       </div>
     </main>
   );

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { type KeyboardEvent, useEffect, useRef, useState } from "react";
 import { RoleBadge } from "@/components/RoleBadge";
 import { ShareDialog } from "@/components/ShareDialog";
+import { Alert } from "@/components/ui/Alert";
+import { Button } from "@/components/ui/Button";
 import { editorExtensions } from "@/lib/editor";
 import type { DocumentDetail, Share } from "@/lib/types";
 import { Toolbar } from "./Toolbar";
@@ -12,12 +14,12 @@ import { type SaveStatus, useDocumentSaver } from "./useDocumentSaver";
 
 const AUTOSAVE_DELAY_MS = 800;
 
-const STATUS_TEXT: Record<SaveStatus, string> = {
-  saved: "All changes saved",
-  unsaved: "Unsaved changes",
-  saving: "Saving…",
-  error: "Could not save",
-  conflict: "Not saved: newer version exists",
+const STATUS: Record<SaveStatus, { text: string; dot: string }> = {
+  saved: { text: "All changes saved", dot: "bg-green-500" },
+  unsaved: { text: "Unsaved changes", dot: "bg-amber-400" },
+  saving: { text: "Saving…", dot: "bg-amber-400 animate-pulse" },
+  error: { text: "Could not save", dot: "bg-red-500" },
+  conflict: { text: "Not saved: newer version exists", dot: "bg-red-500" },
 };
 
 export function DocumentEditor({ doc }: { doc: DocumentDetail }) {
@@ -107,25 +109,23 @@ export function DocumentEditor({ doc }: { doc: DocumentDetail }) {
             onKeyDown={onTitleKeyDown}
             readOnly={!canEdit}
             maxLength={200}
+            placeholder="Untitled document"
+            title={canEdit ? "Click to rename" : undefined}
             aria-label="Document title"
             className="min-w-0 flex-1 rounded border border-transparent px-2 py-1 text-lg font-medium hover:border-slate-200 focus:border-blue-500 focus:outline-none read-only:hover:border-transparent"
           />
           {canEdit && (
             <span
               role="status"
-              className={`whitespace-nowrap text-xs ${status === "error" || status === "conflict" ? "text-red-600" : "text-slate-500"}`}
+              className={`flex items-center gap-1.5 whitespace-nowrap text-xs ${status === "error" || status === "conflict" ? "text-red-600" : "text-slate-500"}`}
             >
-              {STATUS_TEXT[status]}
+              <span className={`h-2 w-2 rounded-full ${STATUS[status].dot}`} aria-hidden="true" />
+              <span className="hidden sm:inline">{STATUS[status].text}</span>
             </span>
           )}
           <RoleBadge role={doc.role} />
           {isOwner ? (
-            <button
-              onClick={() => setShareOpen(true)}
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Share
-            </button>
+            <Button onClick={() => setShareOpen(true)}>Share</Button>
           ) : (
             <span className="hidden whitespace-nowrap text-xs text-slate-500 sm:inline">
               Shared by {doc.owner.name}
@@ -137,31 +137,31 @@ export function DocumentEditor({ doc }: { doc: DocumentDetail }) {
 
       <main className="mx-auto max-w-4xl px-4 py-6">
         {!canEdit && (
-          <p className="mb-4 rounded-md bg-amber-50 p-3 text-sm text-amber-800">
+          <Alert tone="warning" className="mb-4">
             You have view-only access. Ask {doc.owner.name} for edit access if you need to make changes.
-          </p>
+          </Alert>
         )}
         {status === "conflict" && (
-          <div
-            role="alert"
-            className="mb-4 flex items-center justify-between gap-3 rounded-md bg-red-50 p-3 text-sm text-red-700"
+          <Alert
+            className="mb-4"
+            action={
+              <Button variant="secondary" size="sm" onClick={() => window.location.reload()}>
+                Reload
+              </Button>
+            }
           >
-            <span>Someone else saved this document while you were editing. Reload to see the latest version.</span>
-            <button
-              onClick={() => window.location.reload()}
-              className="rounded bg-red-600 px-3 py-1 font-medium text-white hover:bg-red-700"
-            >
-              Reload
-            </button>
-          </div>
+            Someone else saved this document while you were editing. Reload to see the latest version.
+          </Alert>
         )}
         {status === "error" && errorMessage && (
-          <p role="alert" className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-700">
-            {errorMessage} Your next change will try saving again.
-          </p>
+          <Alert className="mb-4">{errorMessage} Your next change will try saving again.</Alert>
         )}
 
-        <div className="rounded-lg border border-slate-200 bg-white px-8 py-10 shadow-sm sm:px-16">
+        {/* Clicking anywhere on the page (not just on the text) puts the cursor in the editor. */}
+        <div
+          onClick={() => canEdit && editor?.commands.focus()}
+          className={`rounded-lg border border-slate-200 bg-white px-8 py-10 shadow-sm sm:px-16 ${canEdit ? "cursor-text" : ""}`}
+        >
           <EditorContent editor={editor} />
         </div>
       </main>

@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 import { api } from "@/lib/api";
 import type { User } from "@/lib/types";
 
@@ -22,12 +24,13 @@ export function AppHeader({ user }: { user: User | null }) {
         </Link>
         {user && (
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-slate-600">
+            <Avatar name={user.name} size="sm" />
+            <span className="hidden text-slate-600 sm:inline">
               Signed in as <span className="font-medium text-slate-900">{user.name}</span>
             </span>
-            <button onClick={logout} className="rounded px-2 py-1 text-slate-600 hover:bg-slate-100">
+            <Button variant="ghost" size="sm" onClick={logout}>
               Log out
-            </button>
+            </Button>
           </div>
         )}
       </div>

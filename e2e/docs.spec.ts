@@ -47,6 +47,10 @@ test("create, rename, format, autosave and reopen a document", async ({ page, co
   await login(page, ALICE);
   const title = `E2E formatting ${unique()}`;
   const id = await createDocument(page, title);
+  await expect(editor(page).locator("p.is-editor-empty")).toHaveAttribute(
+    "data-placeholder",
+    "Start typing your document…",
+  );
 
   await editor(page).click();
   await page.getByLabel("Text style").selectOption("h1");

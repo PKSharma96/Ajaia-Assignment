@@ -32,7 +32,7 @@ Use two browsers (or a private window) to be signed in as two users at once. The
 | This file                                    | `SUBMISSION.md`                                                    |
 | Walkthrough video URL                        | `VIDEO_URL.txt`                                                    |
 | Screenshots                                  | `docs/screenshots/`                                                |
-| Automated tests                              | 95 backend tests, 32 frontend tests, 9 Playwright end-to-end tests |
+| Automated tests                              | 95 backend tests, 40 frontend tests, 9 Playwright end-to-end tests |
 | Deployment config                            | `next.config.mjs` (API proxy), backend `render.yaml`               |
 
 ## Status

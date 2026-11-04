@@ -79,7 +79,7 @@ Users without access get **404, not 403**, so they can't discover that a private
 | --------------------------- | --------------------------------- | ----- | ---------------------------------------------------------------------------- |
 | Backend unit                | Vitest                            | 44    | Access matrix, validation edge cases, importer (real .docx, unsafe Markdown) |
 | Backend API                 | Vitest + supertest, real Postgres | 51    | Every endpoint, permissions, conflicts, upload limits                        |
-| Frontend unit and component | Vitest + Testing Library          | 32    | API client, autosave queue, toolbar with a real editor, share dialog         |
+| Frontend unit and component | Vitest + Testing Library          | 40    | API client, autosave queue, toolbar with a real editor, share dialog, UI kit |
 | End-to-end                  | Playwright (Chrome)               | 9     | The full user journeys with two users at once                                |
 
 I also checked that the tests can fail. I deliberately broke the access rules and the version check, and confirmed that the right tests went red.

@@ -6,12 +6,15 @@ type BlockType = "paragraph" | "h1" | "h2" | "h3";
 
 function ToolbarButton({
   label,
+  shortcut,
   active = false,
   disabled = false,
   onClick,
   children,
 }: {
   label: string;
+  /** Shown in the tooltip, e.g. "B" becomes "Bold (Ctrl/⌘+B)". */
+  shortcut?: string;
   active?: boolean;
   disabled?: boolean;
   onClick: () => void;
@@ -20,7 +23,7 @@ function ToolbarButton({
   return (
     <button
       type="button"
-      title={label}
+      title={shortcut ? `${label} (Ctrl/⌘+${shortcut})` : label}
       aria-label={label}
       aria-pressed={active}
       disabled={disabled}
@@ -88,10 +91,20 @@ export function Toolbar({ editor }: { editor: Editor }) {
         aria-label="Formatting"
         className="mx-auto flex max-w-5xl flex-wrap items-center gap-1 px-4 py-2"
       >
-        <ToolbarButton label="Undo" disabled={!state.canUndo} onClick={() => editor.chain().focus().undo().run()}>
+        <ToolbarButton
+          label="Undo"
+          shortcut="Z"
+          disabled={!state.canUndo}
+          onClick={() => editor.chain().focus().undo().run()}
+        >
           <ArrowIcon d="M9 14 4 9l5-5M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
         </ToolbarButton>
-        <ToolbarButton label="Redo" disabled={!state.canRedo} onClick={() => editor.chain().focus().redo().run()}>
+        <ToolbarButton
+          label="Redo"
+          shortcut="Shift+Z"
+          disabled={!state.canRedo}
+          onClick={() => editor.chain().focus().redo().run()}
+        >
           <ArrowIcon d="m15 14 5-5-5-5M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
         </ToolbarButton>
         <Divider />
@@ -109,14 +122,25 @@ export function Toolbar({ editor }: { editor: Editor }) {
         </select>
         <Divider />
 
-        <ToolbarButton label="Bold" active={state.bold} onClick={() => editor.chain().focus().toggleBold().run()}>
+        <ToolbarButton
+          label="Bold"
+          shortcut="B"
+          active={state.bold}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+        >
           <span className="font-bold">B</span>
         </ToolbarButton>
-        <ToolbarButton label="Italic" active={state.italic} onClick={() => editor.chain().focus().toggleItalic().run()}>
+        <ToolbarButton
+          label="Italic"
+          shortcut="I"
+          active={state.italic}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+        >
           <span className="italic">I</span>
         </ToolbarButton>
         <ToolbarButton
           label="Underline"
+          shortcut="U"
           active={state.underline}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
         >
@@ -126,6 +150,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
 
         <ToolbarButton
           label="Bulleted list"
+          shortcut="Shift+8"
           active={state.bulletList}
           onClick={() => editor.chain().focus().toggleBulletList().run()}
         >
@@ -133,6 +158,7 @@ export function Toolbar({ editor }: { editor: Editor }) {
         </ToolbarButton>
         <ToolbarButton
           label="Numbered list"
+          shortcut="Shift+7"
           active={state.orderedList}
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
         >
